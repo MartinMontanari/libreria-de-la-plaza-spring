@@ -12,7 +12,7 @@ export class ProductService {
 
   private productsBaseUrl = 'http://localhost:8080/api/products';
   private categoriesBaseUrl = 'http://localhost:8080/api/product-category';
-
+  
   constructor(private httpClient: HttpClient) { }
   
   getProductList(theCategoryId: number): Observable<Product[]> {
@@ -23,14 +23,23 @@ export class ProductService {
     }
     const searchByIdUrl = `${this.productsBaseUrl}/search/findByCategoryId?id=${theCategoryId}`;
 
-    return this.httpClient.get<GetResponseProducts>(searchByIdUrl).pipe(
-      map(response => response._embedded.products)
-    )
+    return this.searchProducts(searchByIdUrl);
   }  
 
   getProductCategories(): Observable<ProductCategory[]> {
     return this.httpClient.get<GetResponseProductCategory>(this.categoriesBaseUrl).pipe(
       map(response => response._embedded.productCategory)
+    );
+  }
+
+  searchProductsByKeyword(keyword: string): Observable<Product[]>{
+    const searchProductByKeywordBaseUrl = `${this.productsBaseUrl}/search/findByNameContaining?name=${keyword}`;
+    return this.searchProducts(searchProductByKeywordBaseUrl);
+  }
+
+  searchProducts(searchUrl: string): Observable<Product[]> {
+    return this.httpClient.get<GetResponseProducts>(searchUrl).pipe(
+      map(response => response._embedded.products)
     );
   }
 }
