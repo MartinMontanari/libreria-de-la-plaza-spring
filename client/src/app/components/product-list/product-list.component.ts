@@ -52,7 +52,6 @@ export class ProductListComponent implements OnInit {
     }
 
     this.previuousCategoryId = this.currentCategoryId;
-    console.log(`currentCategoryId: ${this.previuousCategoryId}, pageNumber: ${this.thePageNumber}`)
 
     this.productService.getProductListPaginate(this.thePageNumber, this.thePageSize,this.currentCategoryId).subscribe(
       data => {
@@ -62,6 +61,12 @@ export class ProductListComponent implements OnInit {
         this.theTotalElements = data.page.totalElements;
       }
     )
+  }
+
+  updatePageSize(pageSize: string) {
+    this.thePageSize = +pageSize;
+    this.thePageNumber = 1;
+    this.listProducts();
   }
 
   handleSearchProducts(){
