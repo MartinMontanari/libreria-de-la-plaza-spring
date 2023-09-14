@@ -11,8 +11,14 @@ import { ProductService } from 'src/app/services/product.service';
 export class ProductListComponent implements OnInit {
 
   products: Product[];
-  currentCategoryId: number;
+  currentCategoryId: number = 1;
+  previuousCategoryId: number = 1;
   searchMode: boolean;
+  // new properties for pagination
+  thePageNumber: number;
+  thePageSize: number = 10;
+  theTotalElements: number = 0;
+  
 
   constructor(private productService: ProductService,
               private route: ActivatedRoute ) { }
@@ -40,11 +46,20 @@ export class ProductListComponent implements OnInit {
       //get "id" parameter and converter into number
       this.currentCategoryId = +this.route.snapshot.paramMap.get("id")!;
     }
+    
+    if(this.previuousCategoryId != this.currentCategoryId){
+        this.thePageNumber = 1;
+    }
 
-    //now get the products for the given category id
-    this.productService.getProductList(this.currentCategoryId).subscribe(
+    this.previuousCategoryId = this.currentCategoryId;
+    console.log(`currentCategoryId: ${this.previuousCategoryId}, pageNumber: ${this.thePageNumber}`)
+
+    this.productService.getProductListPaginate(this.thePageNumber, this.thePageSize,this.currentCategoryId).subscribe(
       data => {
-        this.products = data;
+        this.products = data._embedded.products;
+        this.thePageNumber = data.page.number;
+        this.thePageSize = data.page.size;
+        this.theTotalElements = data.page.totalElements;
       }
     )
   }
