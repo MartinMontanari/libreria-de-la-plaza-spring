@@ -18,7 +18,7 @@ export class ProductListComponent implements OnInit {
   thePageNumber: number;
   thePageSize: number = 10;
   theTotalElements: number = 0;
-  
+  previousKeyword: string = "";
 
   constructor(private productService: ProductService,
               private route: ActivatedRoute ) { }
@@ -71,11 +71,31 @@ export class ProductListComponent implements OnInit {
 
   handleSearchProducts(){
     const theKeyWord: string = this.route.snapshot.paramMap.get('keyword')!;
-      this.productService.searchProductsByKeyword(theKeyWord).subscribe(
-        data => {
-          this.products = data;
-        }
+
+      if(this.previousKeyword != theKeyWord){
+        this.thePageNumber = 1;
+      }
+
+      this.previousKeyword = theKeyWord;
+
+      console.log(`keyword=${theKeyWord}, thePageNumber=${this.thePageNumber}`);
+
+      this.productService.getSearchProductListPaginate(this.thePageNumber,this.thePageSize,theKeyWord).subscribe(
+        this.processResult()
       );
+  }
+
+  processResult(): any {
+    return (data: any) => {
+      this.products = data._embedded.products;
+      this.thePageNumber = data.page.number;
+      this.thePageSize = data.page.size;
+      this.theTotalElements = data.page.totalElements; 
+    }
+  }
+
+  addToCart(theProduct: Product){
+    console.log(`adding to cart ${theProduct.name}, ${theProduct.unitPrice}`)
   }
 
 }

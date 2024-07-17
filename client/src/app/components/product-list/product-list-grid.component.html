@@ -13,7 +13,7 @@
                         <div class="price">
                             {{ tempProduct.unitPrice | currency: 'USD' }}
                         </div> 
-                        <a href="#" class="primary-btn" style="text-decoration:none">Agregar al carrito</a>
+                        <button type="button" class="btn btn-primary btn-sm" (click)="addToCart(tempProduct)">Agregar al carrito</button>
                     </div>  
                 </div>  
                 <!-- if products empty then display a message -->
@@ -34,6 +34,7 @@
                                 [pageSize]="thePageSize"
                                 [collectionSize] ="theTotalElements"
                                 [maxSize]="5"
+                                [boundaryLinks]="true"
                                 (pageChange)="listProducts()"
                                 >
                                 </ngb-pagination>
